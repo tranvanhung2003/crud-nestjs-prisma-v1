@@ -24,17 +24,17 @@ export class PostsController {
     return this.postsService.createPost(body);
   }
 
-  @Get('id')
+  @Get(':id')
   getPost(@Param('id') id: string) {
     return this.postsService.getPost(id);
   }
 
-  @Put('id')
+  @Put(':id')
   updatePost(@Param('id') id: string, @Body() body: any) {
     return this.postsService.updatePost(id, body);
   }
 
-  @Delete('id')
+  @Delete(':id')
   deletePost(@Param('id') id: string) {
     return this.postsService.deletePost(id);
   }
