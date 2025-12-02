@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { IsString } from 'class-validator';
 
 export class LoginBodyDto {
@@ -14,4 +15,9 @@ export class RegisterBodyDto extends LoginBodyDto {
 
   @IsString()
   confirmPassword: string;
+}
+
+export class RegisterResponseDto {
+  @Exclude()
+  password: string;
 }
