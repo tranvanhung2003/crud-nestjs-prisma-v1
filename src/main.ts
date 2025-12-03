@@ -1,7 +1,8 @@
-import { UnprocessableEntityException, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import envConfig from './shared/config';
+import { CustomUnprocessableEntityException } from './shared/types/custom.type';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,10 +15,10 @@ async function bootstrap() {
         enableImplicitConversion: true,
       },
       exceptionFactory: (errors) => {
-        return new UnprocessableEntityException(
+        return new CustomUnprocessableEntityException(
           errors.map((error) => ({
-            property: error.property,
-            constraints: error.constraints,
+            field: error.property,
+            error: Object.values(error.constraints || {}).join(', '),
           })),
         );
       },

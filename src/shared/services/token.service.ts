@@ -1,8 +1,12 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import envConfig from '../config';
-import { SignOptions, TokenPayload, VerifyOptions } from '../types/jwt.type';
+import {
+  ExpiresIn,
+  SignOptions,
+  TokenPayload,
+  VerifyOptions,
+} from '../types/jwt.type';
 
 @Injectable()
 export class TokenService {
@@ -22,14 +26,14 @@ export class TokenService {
   async signAccessToken(payload: TokenPayload) {
     return await this.signToken(payload, {
       secret: envConfig.ACCESS_TOKEN_SECRET,
-      expiresIn: envConfig.ACCESS_TOKEN_EXPIRES_IN as any,
+      expiresIn: envConfig.ACCESS_TOKEN_EXPIRES_IN as ExpiresIn,
     });
   }
 
   async signRefreshToken(payload: TokenPayload) {
     return await this.signToken(payload, {
       secret: envConfig.REFRESH_TOKEN_SECRET,
-      expiresIn: envConfig.REFRESH_TOKEN_EXPIRES_IN as any,
+      expiresIn: envConfig.REFRESH_TOKEN_EXPIRES_IN as ExpiresIn,
     });
   }
 

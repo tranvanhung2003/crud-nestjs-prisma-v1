@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { plainToInstance } from 'class-transformer';
 import { IsNumber, IsString, validateSync } from 'class-validator';
 import 'dotenv/config';
 import fs from 'fs';
 import path from 'path';
+import { CustomErrors } from './types/custom.type';
 
 // Kiểm tra xem có file .env không
 if (!fs.existsSync(path.resolve('.env'))) {
@@ -39,10 +39,9 @@ const errors = validateSync(configServer);
 if (errors.length > 0) {
   console.error('Các giá trị cấu hình trong file .env không hợp lệ');
 
-  const errorDetails = errors.map((error) => ({
-    property: error.property,
-    constraints: error.constraints,
-    value: error.value,
+  const errorDetails: CustomErrors = errors.map((error) => ({
+    field: error.property,
+    error: Object.values(error.constraints || {}).join(', '),
   }));
 
   throw new Error(JSON.stringify(errorDetails, null, 2));

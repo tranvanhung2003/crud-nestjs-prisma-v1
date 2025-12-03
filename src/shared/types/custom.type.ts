@@ -3,7 +3,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 
-type CustomErrors = {
+export type CustomErrors = {
   field: string;
   error: string;
 }[];
