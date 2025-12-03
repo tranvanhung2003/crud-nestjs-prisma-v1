@@ -10,7 +10,12 @@ import { PrismaService } from 'src/shared/services/prisma.service';
 import { TokenService } from 'src/shared/services/token.service';
 import { CustomUnprocessableEntityException } from 'src/shared/types/custom.type';
 import { EncodedPayload } from 'src/shared/types/jwt.type';
-import { LoginBodyDto, RegisterBodyDto, RegisterResponseDto } from './auth.dto';
+import {
+  LoginBodyDto,
+  RefreshTokenBodyDto,
+  RegisterBodyDto,
+  RegisterResponseDto,
+} from './auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -88,5 +93,36 @@ export class AuthService {
     });
 
     return { accessToken, refreshToken };
+  }
+
+  async refreshToken(body: RefreshTokenBodyDto) {
+    try {
+      const { refreshToken } = body;
+
+      // Kiểm tra refreshToken có hợp lệ không
+      const { userId } =
+        await this.tokenService.verifyRefreshToken(refreshToken);
+
+      // Kiểm tra refreshToken có tồn tại trong database không
+      await this.prisma.refreshToken.findUniqueOrThrow({
+        where: { token: refreshToken },
+      });
+
+      // Xóa refreshToken cũ
+      await this.prisma.refreshToken.delete({
+        where: { token: refreshToken },
+      });
+
+      // Tạo mới cặp accessToken và refreshToken
+      return await this.generateTokens({ userId });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new UnauthorizedException('Refresh token has been revoked');
+        }
+      }
+
+      throw new UnauthorizedException('Invalid refresh token');
+    }
   }
 }

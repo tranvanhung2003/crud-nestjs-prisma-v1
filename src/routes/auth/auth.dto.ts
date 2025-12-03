@@ -25,3 +25,8 @@ export class RegisterResponseDto {
     Object.assign(this, object);
   }
 }
+
+export class RefreshTokenBodyDto {
+  @IsString()
+  refreshToken: string;
+}
