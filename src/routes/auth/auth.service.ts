@@ -9,7 +9,7 @@ import { HashingService } from 'src/shared/services/hashing.service';
 import { PrismaService } from 'src/shared/services/prisma.service';
 import { TokenService } from 'src/shared/services/token.service';
 import { CustomUnprocessableEntityException } from 'src/shared/types/custom.type';
-import { TokenPayload } from 'src/shared/types/jwt.type';
+import { EncodedPayload } from 'src/shared/types/jwt.type';
 import { LoginBodyDto, RegisterBodyDto, RegisterResponseDto } from './auth.dto';
 
 @Injectable()
@@ -71,7 +71,7 @@ export class AuthService {
     return tokens;
   }
 
-  async generateTokens(payload: TokenPayload) {
+  async generateTokens(payload: EncodedPayload) {
     const [accessToken, refreshToken] = await Promise.all([
       this.tokenService.signAccessToken(payload),
       this.tokenService.signRefreshToken(payload),
@@ -83,7 +83,7 @@ export class AuthService {
       data: {
         token: refreshToken,
         userId: payload.userId,
-        expiresAt: new Date((decodedRefreshToken.exp as any) * 1000),
+        expiresAt: new Date(decodedRefreshToken.exp * 1000),
       },
     });
 

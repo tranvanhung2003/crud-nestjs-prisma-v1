@@ -2,9 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import envConfig from '../config';
 import {
+  DecodedPayload,
+  EncodedPayload,
   ExpiresIn,
   SignOptions,
-  TokenPayload,
   VerifyOptions,
 } from '../types/jwt.type';
 
@@ -12,25 +13,25 @@ import {
 export class TokenService {
   constructor(private readonly jwtService: JwtService) {}
 
-  private async signToken(payload: TokenPayload, options: SignOptions) {
-    return await this.jwtService.signAsync<TokenPayload>(payload, {
+  private async signToken(payload: EncodedPayload, options: SignOptions) {
+    return await this.jwtService.signAsync<EncodedPayload>(payload, {
       ...options,
       algorithm: 'HS256',
     });
   }
 
   private async verifyToken(token: string, options: VerifyOptions) {
-    return await this.jwtService.verifyAsync<TokenPayload>(token, options);
+    return await this.jwtService.verifyAsync<DecodedPayload>(token, options);
   }
 
-  async signAccessToken(payload: TokenPayload) {
+  async signAccessToken(payload: EncodedPayload) {
     return await this.signToken(payload, {
       secret: envConfig.ACCESS_TOKEN_SECRET,
       expiresIn: envConfig.ACCESS_TOKEN_EXPIRES_IN as ExpiresIn,
     });
   }
 
-  async signRefreshToken(payload: TokenPayload) {
+  async signRefreshToken(payload: EncodedPayload) {
     return await this.signToken(payload, {
       secret: envConfig.REFRESH_TOKEN_SECRET,
       expiresIn: envConfig.REFRESH_TOKEN_EXPIRES_IN as ExpiresIn,

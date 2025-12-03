@@ -1,10 +1,13 @@
 import { JwtSignOptions, JwtVerifyOptions } from '@nestjs/jwt';
 
-export type TokenPayload = {
+export interface EncodedPayload {
   userId: number;
-  iat?: number;
-  exp?: number;
-};
+}
+
+export interface DecodedPayload extends EncodedPayload {
+  iat: number;
+  exp: number;
+}
 
 export type SignOptions = Pick<JwtSignOptions, 'secret' | 'expiresIn'>;
 
