@@ -2,6 +2,7 @@ import {
   HttpExceptionOptions,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 
 export type CustomErrors = {
   field: string;
@@ -15,4 +16,23 @@ export class CustomUnprocessableEntityException extends UnprocessableEntityExcep
   ) {
     super(objectOrError, descriptionOrOptions);
   }
+}
+
+export function isPrismaClientKnownRequestError(
+  error: any,
+): error is Prisma.PrismaClientKnownRequestError {
+  return error instanceof Prisma.PrismaClientKnownRequestError;
+}
+
+export function isPrismaClientUniqueConstraintError(
+  error: Prisma.PrismaClientKnownRequestError,
+) {
+  console.log(typeof error);
+  return error.code === 'P2002';
+}
+
+export function isPrismaClientNotFoundError(
+  error: Prisma.PrismaClientKnownRequestError,
+) {
+  return error.code === 'P2025';
 }
