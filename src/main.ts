@@ -2,7 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import envConfig from './shared/config';
-import { CustomUnprocessableEntityException } from './shared/helpers';
+import { CustomUnprocessableEntityException } from './shared/helpers/helpers';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

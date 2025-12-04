@@ -10,7 +10,7 @@ import {
   isPrismaClientKnownRequestError,
   isPrismaClientNotFoundError,
   isPrismaClientUniqueConstraintError,
-} from 'src/shared/helpers';
+} from 'src/shared/helpers/helpers';
 import { HashingService } from 'src/shared/services/hashing.service';
 import { PrismaService } from 'src/shared/services/prisma.service';
 import { TokenService } from 'src/shared/services/token.service';
