@@ -27,7 +27,11 @@ export class AccessTokenGuard implements CanActivate {
       request[REQUEST_USER_KEY] = decodedAccessToken;
 
       return true;
-    } catch {
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+
       throw new UnauthorizedException('Invalid or expired access token');
     }
   }
