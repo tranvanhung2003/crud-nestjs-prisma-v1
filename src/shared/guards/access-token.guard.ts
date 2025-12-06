@@ -12,7 +12,7 @@ import { TokenService } from '../services/token.service';
 export class AccessTokenGuard implements CanActivate {
   constructor(private readonly tokenService: TokenService) {}
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  async canActivate(context: ExecutionContext): Promise<true> {
     try {
       const request = context.switchToHttp().getRequest<Request>();
       const accessToken = request.headers.authorization?.split(' ')[1];

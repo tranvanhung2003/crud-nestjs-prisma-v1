@@ -8,7 +8,7 @@ import { Request } from 'express';
 
 @Injectable()
 export class ApiKeyGuard implements CanActivate {
-  canActivate(context: ExecutionContext): boolean {
+  canActivate(context: ExecutionContext): true {
     const request = context.switchToHttp().getRequest<Request>();
     const xApiKey = request.headers['x-api-key'];
 

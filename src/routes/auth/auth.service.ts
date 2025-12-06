@@ -49,7 +49,7 @@ export class AuthService {
         }
       }
 
-      throw new InternalServerErrorException('Lỗi máy chủ không xác định');
+      throw new InternalServerErrorException('Lỗi máy chủ nội bộ');
     }
   }
 

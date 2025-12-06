@@ -6,10 +6,9 @@ import {
   Param,
   Post,
   Put,
-  UseGuards,
 } from '@nestjs/common';
-import { AccessTokenGuard } from 'src/shared/guards/access-token.guard';
-import { ApiKeyGuard } from 'src/shared/guards/api-key.guard';
+import { AuthType, ConditionGuard } from 'src/shared/constants/auth.constant';
+import { Auth } from 'src/shared/decorators/auth.decorator';
 import { PostsService } from './posts.service';
 
 @Controller('posts')
@@ -17,8 +16,7 @@ export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Get()
-  @UseGuards(ApiKeyGuard)
-  @UseGuards(AccessTokenGuard)
+  @Auth([AuthType.BEARER, AuthType.API_KEY], { condition: ConditionGuard.OR })
   getPosts() {
     return this.postsService.getPosts();
   }
