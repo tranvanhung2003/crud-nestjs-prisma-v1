@@ -47,7 +47,7 @@ export class AuthenticationGuard implements CanActivate {
 
     const promiseGuards = guards.map(async (guard) => {
       try {
-        const result = await Promise.resolve(guard.canActivate(context));
+        const result = await guard.canActivate(context);
 
         return [result, ''] as [boolean, string];
       } catch (error) {
