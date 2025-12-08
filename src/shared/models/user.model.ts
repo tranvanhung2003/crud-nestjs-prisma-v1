@@ -10,8 +10,12 @@ export class UserModel implements User {
   createdAt: Date;
   updatedAt: Date;
 
-  constructor(partial: Partial<UserModel>) {
+  private constructor(partial: Partial<UserModel>) {
     Object.assign(this, partial);
+  }
+
+  static from(user: Partial<UserModel>) {
+    return new UserModel(user);
   }
 
   static fromArray(users: Partial<UserModel>[]) {

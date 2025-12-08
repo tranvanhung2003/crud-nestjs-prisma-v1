@@ -22,6 +22,8 @@ const provideOnlyServices: Type[] = [AccessTokenGuard, ApiKeyGuard];
 
 const sharedAppGuards: Type[] = [AuthenticationGuard];
 
+// ClassSerializerInterceptor must be last to ensure proper serialization
+// ClassSerializerInterceptor phải nằm ở cuối cùng để đảm bảo việc tuần tự hóa đúng cách
 const sharedAppInterceptors: Type[] = [
   LoggingInterceptor,
   TransformInterceptor,

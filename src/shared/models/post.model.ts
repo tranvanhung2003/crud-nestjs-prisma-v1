@@ -12,8 +12,12 @@ export class PostModel implements Post {
   @Type(() => UserModel)
   author?: UserModel;
 
-  constructor(partial: Partial<PostModel>) {
+  private constructor(partial: Partial<PostModel>) {
     Object.assign(this, partial);
+  }
+
+  static from(post: Partial<PostModel>) {
+    return new PostModel(post);
   }
 
   static fromArray(posts: Partial<PostModel>[]) {

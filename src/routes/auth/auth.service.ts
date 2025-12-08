@@ -4,7 +4,6 @@ import {
   InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
 import {
   CustomUnprocessableEntityException,
   isPrismaClientKnownRequestError,
@@ -16,12 +15,7 @@ import { HashingService } from 'src/shared/services/hashing.service';
 import { PrismaService } from 'src/shared/services/prisma.service';
 import { TokenService } from 'src/shared/services/token.service';
 import { EncodedPayload } from 'src/shared/types/jwt.type';
-import {
-  LoginBodyDto,
-  LogoutBodyDto,
-  RefreshTokenBodyDto,
-  RegisterBodyDto,
-} from './auth.dto';
+import { LoginDto, LogoutDto, RefreshTokenDto, RegisterDto } from './auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -31,18 +25,20 @@ export class AuthService {
     private readonly tokenService: TokenService,
   ) {}
 
-  async register(body: RegisterBodyDto) {
+  async register(registerDto: RegisterDto) {
     try {
-      const hashedPassword = await this.hashingService.hash(body.password);
+      const hashedPassword = await this.hashingService.hash(
+        registerDto.password,
+      );
       const user = await this.prisma.user.create({
         data: {
-          email: body.email,
+          email: registerDto.email,
           password: hashedPassword,
-          name: body.name,
+          name: registerDto.name,
         },
       });
 
-      return new UserModel(user);
+      return UserModel.from(user);
     } catch (error) {
       if (isPrismaClientKnownRequestError(error)) {
         if (isPrismaClientUniqueConstraintError(error)) {
@@ -54,9 +50,9 @@ export class AuthService {
     }
   }
 
-  async login(body: LoginBodyDto) {
+  async login(loginDto: LoginDto) {
     const user = await this.prisma.user.findUnique({
-      where: { email: body.email },
+      where: { email: loginDto.email },
     });
 
     if (!user) {
@@ -64,7 +60,7 @@ export class AuthService {
     }
 
     const isPasswordValid = await this.hashingService.compare(
-      body.password,
+      loginDto.password,
       user.password,
     );
 
@@ -82,10 +78,10 @@ export class AuthService {
     return tokens;
   }
 
-  async generateTokens(payload: EncodedPayload) {
+  async generateTokens(encodedPayload: EncodedPayload) {
     const [accessToken, refreshToken] = await Promise.all([
-      this.tokenService.signAccessToken(payload),
-      this.tokenService.signRefreshToken(payload),
+      this.tokenService.signAccessToken(encodedPayload),
+      this.tokenService.signRefreshToken(encodedPayload),
     ]);
     const decodedRefreshToken =
       await this.tokenService.verifyRefreshToken(refreshToken);
@@ -93,7 +89,7 @@ export class AuthService {
     await this.prisma.refreshToken.create({
       data: {
         token: refreshToken,
-        userId: payload.userId,
+        userId: encodedPayload.userId,
         expiresAt: new Date(decodedRefreshToken.exp * 1000),
       },
     });
@@ -101,9 +97,9 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async refreshToken(body: RefreshTokenBodyDto) {
+  async refreshToken(refreshTokenDto: RefreshTokenDto) {
     try {
-      const { refreshToken } = body;
+      const { refreshToken } = refreshTokenDto;
 
       // Kiểm tra refreshToken có hợp lệ không
       const { userId } =
@@ -122,7 +118,7 @@ export class AuthService {
       // Tạo mới cặp accessToken và refreshToken
       return await this.generateTokens({ userId });
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (isPrismaClientKnownRequestError(error)) {
         if (isPrismaClientNotFoundError(error)) {
           throw new UnauthorizedException('Refresh token has been revoked');
         }
@@ -132,9 +128,9 @@ export class AuthService {
     }
   }
 
-  async logout(body: LogoutBodyDto) {
+  async logout(logoutDto: LogoutDto) {
     try {
-      const { refreshToken } = body;
+      const { refreshToken } = logoutDto;
 
       await this.tokenService.verifyRefreshToken(refreshToken);
 
@@ -144,7 +140,7 @@ export class AuthService {
 
       return { message: 'Logout successful' };
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (isPrismaClientKnownRequestError(error)) {
         if (isPrismaClientNotFoundError(error)) {
           throw new UnauthorizedException('Refresh token has been revoked');
         }

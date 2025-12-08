@@ -1,7 +1,7 @@
 import { IsString, Length } from 'class-validator';
 import { Match } from 'src/shared/decorators/custom-validator.decorator';
 
-export class LoginBodyDto {
+export class LoginDto {
   @IsString()
   email: string;
 
@@ -10,7 +10,7 @@ export class LoginBodyDto {
   password: string;
 }
 
-export class RegisterBodyDto extends LoginBodyDto {
+export class RegisterDto extends LoginDto {
   @IsString()
   name: string;
 
@@ -19,9 +19,9 @@ export class RegisterBodyDto extends LoginBodyDto {
   confirmPassword: string;
 }
 
-export class RefreshTokenBodyDto {
+export class RefreshTokenDto {
   @IsString()
   refreshToken: string;
 }
 
-export class LogoutBodyDto extends RefreshTokenBodyDto {}
+export class LogoutDto extends RefreshTokenDto {}
