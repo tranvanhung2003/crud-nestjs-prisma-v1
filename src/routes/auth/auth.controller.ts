@@ -1,10 +1,7 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { AuthType } from 'src/shared/constants/auth.constant';
-import { Auth } from 'src/shared/decorators/auth.decorator';
 import { LoginDto, LogoutDto, RefreshTokenDto, RegisterDto } from './auth.dto';
 import { AuthService } from './auth.service';
 
-@Auth([AuthType.BEARER])
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
